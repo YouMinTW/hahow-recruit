@@ -1,27 +1,36 @@
-const SkillPointCounter = ({ name, value, setSkillPoints, remain }) => {
-  const increment = () =>
-    setSkillPoints(prevStatus => {
-      if (remain > 0) {
-        return { ...prevStatus, [name]: value + 1 }
-      } else {
-        return prevStatus
-      }
-    })
-  const decrement = () =>
-    setSkillPoints(prevStatus => {
-      if (value > 0) {
-        return { ...prevStatus, [name]: value - 1 }
-      } else {
-        return prevStatus
-      }
-    })
+import { Button, Row, Col, Typography, Divider } from 'antd'
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
+import styled from 'styled-components'
+import FlexContainer from '../layouts/FlexContainer'
+
+const { Title } = Typography
+const StyledTitle = styled(Title)`
+  text-align: center;
+  text-transform: uppercase;
+`
+const StyledSpan = styled.span`
+  text-align: center;
+  display: inline-block;
+  width: 60px;
+`
+
+const SkillPointCounter = ({ name, value, remain, increment, decrement }) => {
   return (
-    <div>
-      <span>{name}</span>
-      <button onClick={increment}>+</button>
-      <span>{value}</span>
-      <button onClick={decrement}>-</button>
-    </div>
+    <Row>
+      <Col xs={{ span: 24 }} sm={{ span: 8 }}>
+        <StyledTitle level={4}>{name}</StyledTitle>
+      </Col>
+      <Col xs={{ span: 24 }} sm={{ span: 16 }}>
+        <FlexContainer justifyContent='center'>
+          <Button onClick={() => increment(value)} icon={<PlusOutlined />} disabled={remain <= 0} />
+          <StyledSpan>{value}</StyledSpan>
+          <Button onClick={() => decrement(value)} icon={<MinusOutlined />} disabled={value <= 0} />
+        </FlexContainer>
+      </Col>
+      <Col xs={{ span: 24 }} sm={{ span: 0 }}>
+        <Divider />
+      </Col>
+    </Row>
   )
 }
 
