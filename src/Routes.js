@@ -2,6 +2,8 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import PageLayoutContainer from './layouts/PageLayoutContainer'
 import HeroListPage from './pages/HeroListPage'
 import HeroProfilePage from './pages/HeroProfilePage'
+import NotFoundPage from './pages/NotFoundPage'
+
 const Routes = () => (
   <BrowserRouter>
     <Switch>
@@ -26,6 +28,7 @@ const Routes = () => (
         }}
       />
 
+      <Route component={NotFoundPage} />
     </Switch>
   </BrowserRouter>
 )
