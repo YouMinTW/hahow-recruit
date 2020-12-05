@@ -1,4 +1,4 @@
-import { selector, selectorFamily } from 'recoil'
+import { selector, atomFamily } from 'recoil'
 import axios from 'axios'
 
 export const heroListState = selector({
@@ -12,9 +12,9 @@ export const heroListState = selector({
   }
 })
 
-export const currentHeroSkillPointState = selectorFamily({
+export const currentHeroSkillPointState = atomFamily({
   key: 'currentHeroSkillPointState',
-  get: heroID => async ({ get }) => {
+  default: async heroID => {
     const response = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/heroes/${heroID}/profile`)
     if (response.error) {
       throw response.error

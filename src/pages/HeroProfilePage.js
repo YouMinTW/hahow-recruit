@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilValueLoadable } from 'recoil'
-import { Row, Col, Grid, Button, Skeleton } from 'antd'
+import { useRecoilStateLoadable } from 'recoil'
+import { Row, Col, Grid, Button, Skeleton, message } from 'antd'
 import styled from 'styled-components'
 import FlexContainer from '../layouts/FlexContainer'
 import SkillPointCounter from '../heroes/SkillPointCounter'
 import propertyOrderMap from '../propertyOrderMap.json'
 import { currentHeroSkillPointState } from '../heroes/state/recoilState'
+import axios from 'axios'
+
+const success = () => {
+  message.success('Hero update success')
+}
+
+const error = () => {
+  message.error('Hero update failed')
+}
 
 const { useBreakpoint } = Grid
 
@@ -20,10 +29,23 @@ const StyledDiv = styled.div`
 
 const HeroProfilePageLoadable = () => {
   let { heroID } = useParams()
-  const currentHero = useRecoilValueLoadable(currentHeroSkillPointState(heroID))
+  const [currentHero, setCurrentHero] = useRecoilStateLoadable(currentHeroSkillPointState(heroID))
+
+  const handleSubmit = async skillPoints => {
+    try {
+      await axios.patch(`${process.env.REACT_APP_API_ENDPOINT}/heroes/${heroID}/profile`, skillPoints)
+      setCurrentHero(skillPoints)
+      success()
+    } catch (e) {
+      console.error(e)
+      error()
+    }
+  }
   switch (currentHero.state) {
     case 'hasValue':
-      return <HeroProfilePage heroID={heroID} currentHeroSkillPoints={currentHero.contents} />
+      return (
+        <HeroProfilePage heroID={heroID} currentHeroSkillPoints={currentHero.contents} handleSubmit={handleSubmit} />
+      )
     case 'loading':
       return <HeroProfileLoadingPage />
     case 'hasError':
@@ -33,7 +55,7 @@ const HeroProfilePageLoadable = () => {
   }
 }
 
-const HeroProfilePage = ({ currentHeroSkillPoints }) => {
+const HeroProfilePage = ({ currentHeroSkillPoints, handleSubmit }) => {
   const [skillPoints, setSkillPoints] = useState({})
   useEffect(() => {
     setSkillPoints(currentHeroSkillPoints)
@@ -81,7 +103,7 @@ const HeroProfilePage = ({ currentHeroSkillPoints }) => {
         <Col xs={{ span: 24 }} sm={{ span: 12 }}>
           <FlexContainer flexDirection='column' justifyContent='space-around' alignItems='center'>
             <StyledSpan>剩餘點數:{remain}</StyledSpan>
-            <Button disabled={remain > 0} block={screens['xs']}>
+            <Button onClick={() => handleSubmit(skillPoints)} disabled={remain > 0} block={screens['xs']}>
               Submit
             </Button>
           </FlexContainer>
