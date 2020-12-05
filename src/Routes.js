@@ -1,7 +1,7 @@
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import PageLayoutContainer from './layouts/PageLayoutContainer'
 import HeroListPage from './pages/HeroListPage'
-import HeroProfilePage from './pages/HeroProfilePage'
+import HeroProfilePageLoadable from './pages/HeroProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 
 const Routes = () => (
@@ -21,7 +21,7 @@ const Routes = () => (
                 <HeroListPage />
               </Route>
               <Route path={`${path}/:heroID`}>
-                <HeroProfilePage />
+                <HeroProfilePageLoadable />
               </Route>
             </PageLayoutContainer>
           )

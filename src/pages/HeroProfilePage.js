@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
-import { Row, Col, Grid, Button } from 'antd'
+import { useRecoilValueLoadable } from 'recoil'
+import { Row, Col, Grid, Button, Skeleton } from 'antd'
 import styled from 'styled-components'
 import FlexContainer from '../layouts/FlexContainer'
 import SkillPointCounter from '../heroes/SkillPointCounter'
@@ -18,15 +18,28 @@ const StyledDiv = styled.div`
   padding: 10%;
 `
 
-const HeroProfilePage = () => {
+const HeroProfilePageLoadable = () => {
   let { heroID } = useParams()
-  const originalSkillPoints = useRecoilValue(currentHeroSkillPointState(heroID))
+  const currentHero = useRecoilValueLoadable(currentHeroSkillPointState(heroID))
+  switch (currentHero.state) {
+    case 'hasValue':
+      return <HeroProfilePage heroID={heroID} currentHeroSkillPoints={currentHero.contents} />
+    case 'loading':
+      return <HeroProfileLoadingPage />
+    case 'hasError':
+      throw currentHero.contents
+    default:
+      return <HeroProfileLoadingPage />
+  }
+}
+
+const HeroProfilePage = ({ currentHeroSkillPoints }) => {
   const [skillPoints, setSkillPoints] = useState({})
   useEffect(() => {
-    setSkillPoints(originalSkillPoints)
-  }, [heroID])
+    setSkillPoints(currentHeroSkillPoints)
+  }, [currentHeroSkillPoints])
   const remain =
-    Object.values(originalSkillPoints).reduce((a, b) => a + b, 0) -
+    Object.values(currentHeroSkillPoints).reduce((a, b) => a + b, 0) -
     Object.values(skillPoints).reduce((a, b) => a + b, 0)
   const screens = useBreakpoint()
   const incrementWith = propertyName => value =>
@@ -78,4 +91,14 @@ const HeroProfilePage = () => {
   )
 }
 
-export default HeroProfilePage
+const HeroProfileLoadingPage = () => (
+  <StyledDiv>
+    <Row justify='space-between' align='middle'>
+      <Col xs={{ span: 24 }}>
+        <Skeleton active />
+      </Col>
+    </Row>
+  </StyledDiv>
+)
+
+export default HeroProfilePageLoadable
