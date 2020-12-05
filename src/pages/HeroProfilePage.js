@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilStateLoadable } from 'recoil'
+import { useRecoilStateLoadable, useSetRecoilState } from 'recoil'
 import { Row, Col, Grid, Button, Skeleton, message } from 'antd'
 import styled from 'styled-components'
 import FlexContainer from '../layouts/FlexContainer'
 import SkillPointCounter from '../heroes/SkillPointCounter'
-import { currentHeroSkillPointState } from '../heroes/state/recoilState'
 import propertyOrderMap from '../heroes/propertyOrderMap.json'
+import { currentHeroSkillPointState, currentHeroIDState } from '../heroes/state/recoilState'
 import axios from 'axios'
 
 const success = () => {
@@ -29,6 +29,8 @@ const StyledDiv = styled.div`
 
 const HeroProfilePageLoadable = () => {
   let { heroID } = useParams()
+  const setCurrentHeroID = useSetRecoilState(currentHeroIDState)
+  setCurrentHeroID(heroID)
   const [currentHero, setCurrentHero] = useRecoilStateLoadable(currentHeroSkillPointState(heroID))
 
   const handleSubmit = async skillPoints => {
@@ -103,7 +105,7 @@ const HeroProfilePage = ({ currentHeroSkillPoints, handleSubmit }) => {
         <Col xs={{ span: 24 }} sm={{ span: 12 }}>
           <FlexContainer flexDirection='column' justifyContent='space-around' alignItems='center'>
             <StyledSpan>剩餘點數:{remain}</StyledSpan>
-            <Button onClick={() => handleSubmit(skillPoints)} disabled={remain > 0} block={screens['xs']}>
+            <Button onClick={() => handleSubmit(skillPoints)} disabled={remain > 0} size='large' block={screens['xs']}>
               Submit
             </Button>
           </FlexContainer>

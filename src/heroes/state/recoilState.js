@@ -1,4 +1,4 @@
-import { selector, atomFamily } from 'recoil'
+import { atom, selector, atomFamily } from 'recoil'
 import axios from 'axios'
 
 export const heroListState = selector({
@@ -12,6 +12,10 @@ export const heroListState = selector({
   }
 })
 
+export const currentHeroIDState = atom({
+  key: 'currentHeroIDState',
+  default: null
+})
 export const currentHeroSkillPointState = atomFamily({
   key: 'currentHeroSkillPointState',
   default: async heroID => {
