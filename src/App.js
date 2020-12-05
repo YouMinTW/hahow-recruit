@@ -3,14 +3,17 @@ import './App.css'
 import Routes from './Routes'
 import { RecoilRoot } from 'recoil'
 import LoadingPage from './pages/LoadingPage'
+import ErrorBoundary from './main/ErrorBoundary'
 
 function App() {
   return (
-    <RecoilRoot>
-      <Suspense fallback={<LoadingPage />}>
-        <Routes />
-      </Suspense>
-    </RecoilRoot>
+    <ErrorBoundary>
+      <RecoilRoot>
+        <Suspense fallback={<LoadingPage />}>
+          <Routes />
+        </Suspense>
+      </RecoilRoot>
+    </ErrorBoundary>
   )
 }
 

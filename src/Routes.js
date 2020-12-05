@@ -28,7 +28,7 @@ const Routes = () => (
         }}
       />
 
-      <Route component={NotFoundPage} />
+      <Route component={() => <NotFoundPage message='Not Found' />} />
     </Switch>
   </BrowserRouter>
 )
