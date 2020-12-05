@@ -5,8 +5,8 @@ import { Row, Col, Grid, Button, Skeleton, message } from 'antd'
 import styled from 'styled-components'
 import FlexContainer from '../layouts/FlexContainer'
 import SkillPointCounter from '../heroes/SkillPointCounter'
-import propertyOrderMap from '../propertyOrderMap.json'
 import { currentHeroSkillPointState } from '../heroes/state/recoilState'
+import propertyOrderMap from '../heroes/propertyOrderMap.json'
 import axios from 'axios'
 
 const success = () => {
