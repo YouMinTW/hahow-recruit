@@ -1,25 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import { Suspense } from 'react'
+import './App.css'
+import Routes from './Routes'
+import { RecoilRoot } from 'recoil'
+import LoadingPage from './pages/LoadingPage'
+import ErrorBoundary from './main/ErrorBoundary'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <ErrorBoundary>
+      <RecoilRoot>
+        <Suspense fallback={<LoadingPage />}>
+          <Routes />
+        </Suspense>
+      </RecoilRoot>
+    </ErrorBoundary>
+  )
 }
 
-export default App;
+export default App
