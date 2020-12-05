@@ -1,11 +1,12 @@
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilValue, useRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 import { Row, Col, Grid, Button } from 'antd'
 import styled from 'styled-components'
 import FlexContainer from '../layouts/FlexContainer'
 import SkillPointCounter from '../heroes/SkillPointCounter'
 import propertyOrderMap from '../propertyOrderMap.json'
-import { currentHeroState, currentHeroUpdatedSkillPointState } from '../heroes/state/recoilState'
+import { currentHeroSkillPointState } from '../heroes/state/recoilState'
 
 const { useBreakpoint } = Grid
 
@@ -19,10 +20,15 @@ const StyledDiv = styled.div`
 
 const HeroProfilePage = () => {
   let { heroID } = useParams()
-  const currentHero = useRecoilValue(currentHeroState(heroID))
-  const [skillPoints, setSkillPoints] = useRecoilState(currentHeroUpdatedSkillPointState(heroID))
+  const originalSkillPoints = useRecoilValue(currentHeroSkillPointState(heroID))
+  const [skillPoints, setSkillPoints] = useState({})
+  useEffect(() => {
+    setSkillPoints(originalSkillPoints)
+  }, [heroID])
+  const remain =
+    Object.values(originalSkillPoints).reduce((a, b) => a + b, 0) -
+    Object.values(skillPoints).reduce((a, b) => a + b, 0)
   const screens = useBreakpoint()
-  const remain = currentHero.remain
   const incrementWith = propertyName => value =>
     setSkillPoints(prevStatus => {
       if (remain > 0) {
