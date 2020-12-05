@@ -22,6 +22,9 @@ class ErrorBoundary extends Component {
       if (error.message.includes('Network Error')) {
         return <NotFoundPage message='Network Error' error={error} />
       }
+      if (error.message.includes('404')) {
+        return <NotFoundPage message='Not Found' error={error} />
+      }
       return <NotFoundPage error={error} />
     }
 

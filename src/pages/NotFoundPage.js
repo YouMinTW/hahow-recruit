@@ -5,9 +5,13 @@ import PageLayoutContainer from '../layouts/PageLayoutContainer'
 const NotFoundPage = ({ error, message }) => {
   let history = useHistory()
   const clickHandler = () => {
-    if (error) {
+    if (error && message === 'Not Found') {
+      // server 404 react router dom not available
+      window.history.back()
+    } else if (error) {
       window.location.reload()
     } else {
+      // browser not found react router dom available
       history.goBack()
     }
   }
@@ -20,7 +24,7 @@ const NotFoundPage = ({ error, message }) => {
           subTitle={`您所造訪的路徑 ${window.location.href} 並不存在`}
           extra={
             <Button type='primary' onClick={clickHandler}>
-              {error ? '重新整理' : '回上一頁'}
+              回上一頁
             </Button>
           }
         />
