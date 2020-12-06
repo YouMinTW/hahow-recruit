@@ -18,6 +18,10 @@
 .env.test.local
 .env.production.local
 
+# CRA issue 會不斷產生 .eslintcache
+# See https://github.com/facebook/create-react-app/issues/10161
+.eslintcache
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

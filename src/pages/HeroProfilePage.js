@@ -5,8 +5,8 @@ import { Row, Col, Grid, Button, Skeleton, message } from 'antd'
 import styled from 'styled-components'
 import FlexContainer from '../layouts/FlexContainer'
 import SkillPointCounter from '../heroes/SkillPointCounter'
-import propertyOrderMap from '../heroes/propertyOrderMap.json'
-import { currentHeroSkillPointState, currentHeroIDState } from '../heroes/state/recoilState'
+import profilePriorityMap from '../heroes/profilePriorityMap.json'
+import { currentHeroProfileState, currentHeroIDState } from '../heroes/state/recoilState'
 import axios from 'axios'
 
 const success = () => {
@@ -29,45 +29,45 @@ const StyledDiv = styled.div`
 
 const HeroProfilePageLoadable = () => {
   let { heroID } = useParams()
+  const [currentHeroProfile, setCurrentHeroProfile] = useRecoilStateLoadable(currentHeroProfileState(heroID))
+  // 將 heroID 存進 Recoil 作全域共享，讓 Hero List Page 及其他元件能使用
   const setCurrentHeroID = useSetRecoilState(currentHeroIDState)
   setCurrentHeroID(heroID)
-  const [currentHero, setCurrentHero] = useRecoilStateLoadable(currentHeroSkillPointState(heroID))
 
-  const handleSubmit = async skillPoints => {
+  const handleSubmit = async updatedProfile => {
     try {
-      await axios.patch(`${process.env.REACT_APP_API_ENDPOINT}/heroes/${heroID}/profile`, skillPoints)
-      setCurrentHero(skillPoints)
+      await axios.patch(`${process.env.REACT_APP_API_ENDPOINT}/heroes/${heroID}/profile`, updatedProfile)
+      setCurrentHeroProfile(updatedProfile)
       success()
     } catch (e) {
       console.error(e)
       error()
     }
   }
-  switch (currentHero.state) {
+  switch (currentHeroProfile.state) {
     case 'hasValue':
       return (
-        <HeroProfilePage heroID={heroID} currentHeroSkillPoints={currentHero.contents} handleSubmit={handleSubmit} />
+        <HeroProfilePage heroID={heroID} originalProfile={currentHeroProfile.contents} handleSubmit={handleSubmit} />
       )
     case 'loading':
       return <HeroProfileLoadingPage />
     case 'hasError':
-      throw currentHero.contents
+      throw currentHeroProfile.contents
     default:
       return <HeroProfileLoadingPage />
   }
 }
 
-const HeroProfilePage = ({ currentHeroSkillPoints, handleSubmit }) => {
-  const [skillPoints, setSkillPoints] = useState({})
+const HeroProfilePage = ({ originalProfile, handleSubmit }) => {
+  const [updatedProfile, setUpdatedProfile] = useState({})
   useEffect(() => {
-    setSkillPoints(currentHeroSkillPoints)
-  }, [currentHeroSkillPoints])
+    setUpdatedProfile(originalProfile)
+  }, [originalProfile])
   const remain =
-    Object.values(currentHeroSkillPoints).reduce((a, b) => a + b, 0) -
-    Object.values(skillPoints).reduce((a, b) => a + b, 0)
+    Object.values(originalProfile).reduce((a, b) => a + b, 0) - Object.values(updatedProfile).reduce((a, b) => a + b, 0)
   const screens = useBreakpoint()
   const incrementWith = propertyName => value =>
-    setSkillPoints(prevStatus => {
+    setUpdatedProfile(prevStatus => {
       if (remain > 0) {
         return { ...prevStatus, [propertyName]: value + 1 }
       } else {
@@ -75,7 +75,7 @@ const HeroProfilePage = ({ currentHeroSkillPoints, handleSubmit }) => {
       }
     })
   const decrementWith = propertyName => value =>
-    setSkillPoints(prevStatus => {
+    setUpdatedProfile(prevStatus => {
       if (value > 0) {
         return { ...prevStatus, [propertyName]: value - 1 }
       } else {
@@ -86,9 +86,10 @@ const HeroProfilePage = ({ currentHeroSkillPoints, handleSubmit }) => {
     <StyledDiv>
       <Row justify='space-between' align='middle'>
         <Col xs={{ span: 24 }} sm={{ span: 12 }}>
-          {Object.entries(skillPoints)
+          {Object.entries(updatedProfile)
+            // 將技能依照畫面需求排序
             .sort(([propertyA], [propertyB]) => {
-              return propertyOrderMap[propertyA] - propertyOrderMap[propertyB]
+              return profilePriorityMap[propertyA] - profilePriorityMap[propertyB]
             })
             .map(([property, value]) => (
               <SkillPointCounter
@@ -105,7 +106,13 @@ const HeroProfilePage = ({ currentHeroSkillPoints, handleSubmit }) => {
         <Col xs={{ span: 24 }} sm={{ span: 12 }}>
           <FlexContainer flexDirection='column' justifyContent='space-around' alignItems='center'>
             <StyledSpan>剩餘點數:{remain}</StyledSpan>
-            <Button onClick={() => handleSubmit(skillPoints)} disabled={remain > 0} size='large' block={screens['xs']}>
+            {/* TODO 可以跟 UI, PM 討論，若這個技能非常重要，或是只允許有限次數修正，則可在送出儲存前，提醒使用者是否確認變更 */}
+            <Button
+              onClick={() => handleSubmit(updatedProfile)}
+              disabled={remain > 0}
+              size='large'
+              block={screens['xs']}
+            >
               Submit
             </Button>
           </FlexContainer>

@@ -20,11 +20,14 @@ class ErrorBoundary extends Component {
 
     if (hasError) {
       if (error.message.includes('Network Error')) {
+        // 請檢查連線環境
         return <NotFoundPage message='Network Error' error={error} />
       }
       if (error.message.includes('404')) {
+        // Server 回傳 404
         return <NotFoundPage message='Not Found' error={error} />
       }
+      // 其他 Error
       return <NotFoundPage error={error} />
     }
 

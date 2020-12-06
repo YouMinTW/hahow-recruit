@@ -16,8 +16,8 @@ export const currentHeroIDState = atom({
   key: 'currentHeroIDState',
   default: null
 })
-export const currentHeroSkillPointState = atomFamily({
-  key: 'currentHeroSkillPointState',
+export const currentHeroProfileState = atomFamily({
+  key: 'currentHeroProfileState',
   default: async heroID => {
     const response = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/heroes/${heroID}/profile`)
     if (response.error) {
