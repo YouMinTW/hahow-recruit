@@ -87,6 +87,7 @@ const HeroProfilePage = ({ currentHeroSkillPoints, handleSubmit }) => {
       <Row justify='space-between' align='middle'>
         <Col xs={{ span: 24 }} sm={{ span: 12 }}>
           {Object.entries(skillPoints)
+            // 將技能依照畫面需求排序
             .sort(([propertyA], [propertyB]) => {
               return propertyOrderMap[propertyA] - propertyOrderMap[propertyB]
             })
@@ -105,6 +106,7 @@ const HeroProfilePage = ({ currentHeroSkillPoints, handleSubmit }) => {
         <Col xs={{ span: 24 }} sm={{ span: 12 }}>
           <FlexContainer flexDirection='column' justifyContent='space-around' alignItems='center'>
             <StyledSpan>剩餘點數:{remain}</StyledSpan>
+            {/* TODO 可以跟 UI, PM 討論，若這個技能非常重要，或是只允許有限次數修正，則可在送出儲存前，提醒使用者是否確認變更 */}
             <Button onClick={() => handleSubmit(skillPoints)} disabled={remain > 0} size='large' block={screens['xs']}>
               Submit
             </Button>
