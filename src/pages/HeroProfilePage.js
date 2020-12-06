@@ -5,7 +5,7 @@ import { Row, Col, Grid, Button, Skeleton, message } from 'antd'
 import styled from 'styled-components'
 import FlexContainer from '../layouts/FlexContainer'
 import SkillPointCounter from '../heroes/SkillPointCounter'
-import propertyOrderMap from '../heroes/propertyOrderMap.json'
+import profilePriorityMap from '../heroes/profilePriorityMap.json'
 import { currentHeroProfileState, currentHeroIDState } from '../heroes/state/recoilState'
 import axios from 'axios'
 
@@ -29,9 +29,10 @@ const StyledDiv = styled.div`
 
 const HeroProfilePageLoadable = () => {
   let { heroID } = useParams()
+  const [currentHeroProfile, setCurrentHeroProfile] = useRecoilStateLoadable(currentHeroProfileState(heroID))
+  // 將 heroID 存進 Recoil 作全域共享，讓 Hero List Page 及其他元件能使用
   const setCurrentHeroID = useSetRecoilState(currentHeroIDState)
   setCurrentHeroID(heroID)
-  const [currentHeroProfile, setCurrentHeroProfile] = useRecoilStateLoadable(currentHeroProfileState(heroID))
 
   const handleSubmit = async updatedProfile => {
     try {
@@ -88,7 +89,7 @@ const HeroProfilePage = ({ originalProfile, handleSubmit }) => {
           {Object.entries(updatedProfile)
             // 將技能依照畫面需求排序
             .sort(([propertyA], [propertyB]) => {
-              return propertyOrderMap[propertyA] - propertyOrderMap[propertyB]
+              return profilePriorityMap[propertyA] - profilePriorityMap[propertyB]
             })
             .map(([property, value]) => (
               <SkillPointCounter
